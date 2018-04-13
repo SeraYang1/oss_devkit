@@ -685,7 +685,13 @@ def find_match(open_or_closed, list_of_dictionaries, keyword, user, comment, num
         for sub_keys in list(dictionary.keys()):
             sub_dictionary = dictionary[sub_keys]
             if keyword:         # checks keyword
-                if keyword.upper() in sub_dictionary.keys().upper() or keyword in sub_dictionary.values().upper():
+                values = ""
+                for x in sub_dictionary.values():
+                    if(type(x) == str):
+                        values += x.upper()
+                    else:
+                        values += " ".join(x).upper()
+                if keyword.upper() in values.upper():
                     appeared_before = True
                     if(open_or_closed):
                         all_prs[sub_dictionary['modified']] = '{0} \x1b[0;32;40m {1} \x1b[0m {2}/{3} {4}'.format(sub_keys, "O", sub_dictionary['user'], sub_dictionary['branch'], sub_dictionary['comment'])
@@ -695,7 +701,7 @@ def find_match(open_or_closed, list_of_dictionaries, keyword, user, comment, num
                 temp_user = sub_dictionary['user']
                 temp_branch = sub_dictionary["branch"]
                 temp_comment = sub_dictionary["comment"]
-                temp_label = sub_dictionary["labels"]
+                temp_label = " ".join(sub_dictionary["labels"])
                 if label.upper() in temp_label.upper() and comment.upper() in temp_comment.upper() and user.upper() in temp_user.upper() and branch.upper() in temp_branch.upper():
                     appeared_before = True
                     if(open_or_closed):
@@ -735,7 +741,6 @@ def search(keyword, user, comment, number, branch, opened_or_closed, label, sort
         # if pull-requests.toml hasnt been created yet calls sync and then reties to fetch
         sync()
         search(keyword, user, comment, number, branch, status)
-
     open_dict = pr_dict['open pull requests']
     closed_dict = pr_dict['closed pull requests']
     if(not opened_or_closed or opened_or_closed.lower() == 'open'):
@@ -851,7 +856,7 @@ def sync():
     to_write = to_write[:-1]+'\n'
 
     print("Syncing CLOSED pull requests")
-    to_write = to_write + "['closed pull requests'] \n"
+    to_write = to_write + "[['closed pull requests']] \n"
     closed_prs = g.get_user(username).get_repo(repo).get_pulls("closed")
     for pr in closed_prs:
         to_write = to_write + find_pr_info(username, repo, pr, token, "closed")
@@ -862,7 +867,6 @@ def sync():
         if f"pull requests'.{issue.number}" not in to_write:
             to_write = to_write + find_issue_info(username, repo, issue, token)
     # converts it to toml and stores in file
-    print(to_writeg)
     toml_string = toml.loads(to_write)
     toml.dump(toml_string, f)
 
