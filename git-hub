@@ -627,6 +627,7 @@ def get_info(pr_num):
             labels = pr_dictionary['labels']
         created_at = pr_dictionary['created_at'][:10]
         updated = pr_dictionary['modified'][:10]
+        comments = pr_dictionary['comment_count']
         if open_PR == 'O':
             click.echo(f'{key} {ansi.GREEN} {open_PR} {ansi.CLOSE} '
                        f'{pr_dictionary["user"]}/{pr_dictionary["branch"]}'
@@ -635,9 +636,11 @@ def get_info(pr_num):
             click.echo(f'{key} {ansi.RED} {open_PR} {ansi.CLOSE} '
                        f'{pr_dictionary["user"]}/{pr_dictionary["branch"]}'
                        f' {pr_dictionary["comment"]}')
-        click.echo(f'-Labels: {labels}  -Reviewers: {reviewers}  -Assignees:'
-                   f' {assignee}  -Milestones: {milestone}')
-        click.echo(f'-Created at: {created_at}  -Last modified: {updated}')
+
+        click.echo(f'-Reviewers: {reviewers} \n-Assignees: {assignee} \n'
+                   f'-Labels: {labels} \n-Milestones: {milestone} \n-Comment '
+                   f'count: {comments} \n-Created at: {created_at} \n-Last '
+                   f'modified: {updated}')
 
 
 def print_in_order(sort, dict):

@@ -52,6 +52,28 @@ class TestGitHubMethods(unittest.TestCase):
         self.assertEqual(1, len(output))
         self.assertEqual(output[0], "7  O  SeraYang1/new_branch 'New branch' : 2018-04-10")
 
+    # Checks that `git hub info {pr_num}` fetches all necessary info
+    def test_info(self):
+        p = subprocess.run(["git", "hub", "info", "5"], stdout=subprocess.PIPE)
+        output = p.stdout.decode("utf-8").split("\n")
+        output = output[:-1]
+        self.assertEqual(8, len(output))
+        self.assertEqual(output[0], "5  O  SeraYang1/another-pull 'empty'")
+        self.assertEqual(output[1], "-Reviewers: [] ")
+        self.assertEqual(output[2], "-Assignees: ['SeraYang1'] ")
+        self.assertEqual(output[3], "-Labels: ['bug', 'enhancement'] ")
+        self.assertEqual(output[4], "-Milestones: foxtrot ")
+        self.assertEqual(output[5], "-Comment count: 3 ")
+        self.assertEqual(output[6], "-Created at: 2017-09-02 ")
+        self.assertEqual(output[7], "-Last modified: 2018-04-04")
+
+    # Checks that `git hub render` creates an output.html
+    def test_render(self):
+        if os.path.isfile("output.html"):
+            os.remove("output.html")
+        p = subprocess.run(["git", "hub", "render"])
+        self.assertTrue(os.path.isfile("output.html"))
+
 
 if __name__ == '__main__':
     unittest.main()
